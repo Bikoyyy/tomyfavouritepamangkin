@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>for the little one · a message from the heart</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,37 +14,30 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       min-height: 100vh;
-      min-height: -webkit-fill-available;
       font-family: 'Quicksand', sans-serif;
       background: radial-gradient(circle at 20% 30%, #1a3a6d, #0f1a3a, #060a18);
       color: #3a2a1a;
       overflow: hidden;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      position: relative;
       font-weight: 400;
-      touch-action: pan-x pan-y;
     }
 
-    /* Sound Toggle - Mobile Optimized */
+    /* Sound Toggle */
     .sound-toggle {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
+      bottom: 24px;
+      left: 24px;
       z-index: 100;
-      background: rgba(255, 248, 235, 0.25);
+      background: rgba(255, 248, 235, 0.2);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1.5px solid rgba(255, 245, 220, 0.4);
       border-radius: 50px;
-      padding: 14px 22px;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -54,21 +45,19 @@
       transition: all 0.3s ease;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       color: #fff8e7;
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
     }
 
-    .sound-toggle:active {
-      background: rgba(255, 248, 235, 0.4);
-      transform: scale(0.98);
+    .sound-toggle:hover {
+      background: rgba(255, 248, 235, 0.3);
+      transform: scale(1.05);
     }
 
     .sound-icon {
-      font-size: 28px;
+      font-size: 24px;
     }
 
     .sound-text {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 500;
       letter-spacing: 1px;
     }
@@ -84,11 +73,11 @@
       pointer-events: none;
     }
 
-    /* Moon - Mobile Adjusted */
+    /* Moon */
     .moon-container {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 5%;
+      right: 5%;
       z-index: 2;
       filter: drop-shadow(0 0 40px rgba(255, 235, 170, 0.5));
       animation: floatMoon 10s ease-in-out infinite;
@@ -96,18 +85,11 @@
     }
 
     .moon {
-      width: 70px;
-      height: 70px;
+      width: 90px;
+      height: 90px;
       background: radial-gradient(circle at 30% 30%, #fff8e7, #ffebb5);
       border-radius: 50%;
       box-shadow: 0 0 60px #ffe9a7, inset -8px -4px 12px rgba(0,0,0,0.08);
-    }
-
-    @media (min-width: 768px) {
-      .moon {
-        width: 90px;
-        height: 90px;
-      }
     }
 
     /* Clouds */
@@ -133,42 +115,33 @@
       animation: drift 45s linear reverse infinite;
     }
 
-    /* Main Wrapper - Mobile Optimized */
+    /* Main Wrapper */
     .story-wrapper {
       position: relative;
       z-index: 10;
       min-height: 100vh;
-      min-height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      padding-bottom: env(safe-area-inset-bottom, 16px);
+      padding: 24px;
     }
 
-    /* Welcome Screen - Mobile Optimized */
+    /* Welcome Screen */
     .welcome-card {
       background: rgba(30, 40, 70, 0.35);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 2px solid rgba(255, 245, 210, 0.2);
-      border-radius: 40px;
-      padding: 36px 24px;
-      max-width: 450px;
+      border-radius: 60px;
+      padding: 48px 40px;
+      max-width: 500px;
       width: 100%;
       text-align: center;
       box-shadow: 0 35px 60px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 225, 160, 0.1) inset;
       transition: opacity 0.5s ease, transform 0.5s ease;
       opacity: 1;
       transform: scale(1);
-    }
-
-    @media (min-width: 768px) {
-      .welcome-card {
-        padding: 48px 40px;
-        border-radius: 60px;
-      }
     }
 
     .welcome-card.hidden {
@@ -179,49 +152,28 @@
     }
 
     .welcome-icon {
-      font-size: 56px;
-      margin-bottom: 20px;
+      font-size: 64px;
+      margin-bottom: 24px;
       filter: drop-shadow(0 10px 15px #00000030);
       animation: gentlePulse 3s ease-in-out infinite;
     }
 
-    @media (min-width: 768px) {
-      .welcome-icon {
-        font-size: 64px;
-        margin-bottom: 24px;
-      }
-    }
-
     .welcome-title {
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 400;
-      letter-spacing: 2px;
-      margin-bottom: 12px;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
       text-shadow: 0 3px 15px #5a7fc9;
       color: #fff5e0;
     }
 
-    @media (min-width: 768px) {
-      .welcome-title {
-        font-size: 2.5rem;
-        letter-spacing: 3px;
-      }
-    }
-
     .welcome-sub {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       opacity: 0.9;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
       font-weight: 300;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       color: #fff5e0;
-    }
-
-    @media (min-width: 768px) {
-      .welcome-sub {
-        font-size: 1.3rem;
-        margin-bottom: 40px;
-      }
     }
 
     .start-btn {
@@ -229,43 +181,29 @@
       border: none;
       color: #2a3f7e;
       font-weight: 600;
-      font-size: 1.4rem;
-      padding: 16px 32px;
-      border-radius: 60px;
+      font-size: 1.6rem;
+      padding: 16px 36px;
+      border-radius: 80px;
       cursor: pointer;
       box-shadow: 0 15px 30px -8px rgba(0,0,0,0.3), 0 0 0 2px #fff9e0 inset;
       transition: all 0.25s ease;
       letter-spacing: 2px;
       width: 100%;
-      max-width: 260px;
+      max-width: 280px;
       margin: 0 auto;
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
     }
 
-    .start-btn:active {
+    .start-btn:hover {
       background: #fffdf5;
-      transform: scale(0.98);
+      transform: scale(1.04);
+      box-shadow: 0 20px 35px -6px #00000060, 0 0 0 3px #fff2cc inset;
     }
 
-    @media (min-width: 768px) {
-      .start-btn {
-        font-size: 1.6rem;
-        padding: 18px 36px;
-        max-width: 280px;
-      }
-      
-      .start-btn:hover {
-        transform: scale(1.04);
-      }
-    }
-
-    /* Book Container - Mobile Optimized */
+    /* Book Container */
     .book-container {
-      max-width: 100%;
+      max-width: 750px;
       width: 100%;
-      perspective: 2000px;
-      touch-action: pan-y;
+      perspective: 2500px;
     }
 
     .book-container.hidden {
@@ -276,22 +214,9 @@
     .book {
       position: relative;
       width: 100%;
-      min-height: 480px;
+      min-height: 520px;
       transform-style: preserve-3d;
       cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    @media (min-width: 768px) {
-      .book {
-        min-height: 520px;
-      }
-    }
-
-    @media (min-height: 700px) {
-      .book {
-        min-height: 560px;
-      }
     }
 
     /* Book shadow */
@@ -326,7 +251,7 @@
       backface-visibility: hidden;
     }
 
-    /* Horizontal ruled lines */
+    /* Horizontal ruled lines on left page */
     .page-left .ruled-lines {
       position: absolute;
       top: 0;
@@ -336,41 +261,22 @@
       background: repeating-linear-gradient(
         to bottom,
         transparent,
-        transparent 24px,
-        rgba(139, 119, 80, 0.1) 24px,
-        rgba(139, 119, 80, 0.1) 25px
+        transparent 27px,
+        rgba(139, 119, 80, 0.12) 27px,
+        rgba(139, 119, 80, 0.12) 28px
       );
       pointer-events: none;
-    }
-
-    @media (min-width: 768px) {
-      .page-left .ruled-lines {
-        background: repeating-linear-gradient(
-          to bottom,
-          transparent,
-          transparent 27px,
-          rgba(139, 119, 80, 0.12) 27px,
-          rgba(139, 119, 80, 0.12) 28px
-        );
-      }
     }
 
     /* Red margin line */
     .page-left .margin-line {
       position: absolute;
       top: 0;
-      left: 25px;
+      left: 35px;
       width: 1px;
       height: 100%;
-      background: rgba(200, 120, 120, 0.15);
+      background: rgba(200, 120, 120, 0.2);
       pointer-events: none;
-    }
-
-    @media (min-width: 768px) {
-      .page-left .margin-line {
-        left: 35px;
-        background: rgba(200, 120, 120, 0.2);
-      }
     }
 
     /* Right Page */
@@ -392,7 +298,6 @@
       transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       backface-visibility: hidden;
       z-index: 10;
-      will-change: transform;
     }
 
     /* Horizontal ruled lines on right page */
@@ -405,62 +310,37 @@
       background: repeating-linear-gradient(
         to bottom,
         transparent,
-        transparent 24px,
-        rgba(139, 119, 80, 0.1) 24px,
-        rgba(139, 119, 80, 0.1) 25px
+        transparent 27px,
+        rgba(139, 119, 80, 0.12) 27px,
+        rgba(139, 119, 80, 0.12) 28px
       );
       pointer-events: none;
-    }
-
-    @media (min-width: 768px) {
-      .page-right .ruled-lines {
-        background: repeating-linear-gradient(
-          to bottom,
-          transparent,
-          transparent 27px,
-          rgba(139, 119, 80, 0.12) 27px,
-          rgba(139, 119, 80, 0.12) 28px
-        );
-      }
     }
 
     /* Red margin line */
     .page-right .margin-line {
       position: absolute;
       top: 0;
-      left: 25px;
+      left: 35px;
       width: 1px;
       height: 100%;
-      background: rgba(200, 120, 120, 0.15);
+      background: rgba(200, 120, 120, 0.2);
       pointer-events: none;
     }
 
-    @media (min-width: 768px) {
-      .page-right .margin-line {
-        left: 35px;
-        background: rgba(200, 120, 120, 0.2);
-      }
-    }
-
-    /* Flip animation */
+    /* Flip animation - slow and deliberate */
     .page-right.flip {
       transform: rotateY(-170deg);
     }
 
     /* Page content */
     .page-content {
-      padding: 25px 15px 25px 35px;
+      padding: 35px 30px 35px 50px;
       height: 100%;
       display: flex;
       flex-direction: column;
       position: relative;
       z-index: 5;
-    }
-
-    @media (min-width: 768px) {
-      .page-content {
-        padding: 35px 30px 35px 50px;
-      }
     }
 
     .page-left .page-content {
@@ -479,7 +359,7 @@
       position: absolute;
       top: 0;
       left: 50%;
-      width: 6px;
+      width: 8px;
       height: 100%;
       background: linear-gradient(to right, 
         rgba(0,0,0,0.15) 0%, 
@@ -491,18 +371,12 @@
       border-radius: 0 2px 2px 0;
     }
 
-    @media (min-width: 768px) {
-      .book-spine {
-        width: 8px;
-      }
-    }
-
     /* Page number */
     .page-number-left {
       position: absolute;
-      bottom: 12px;
-      left: 35px;
-      font-size: 0.7rem;
+      bottom: 15px;
+      left: 50px;
+      font-size: 0.8rem;
       color: #8b7750;
       font-family: 'Playfair Display', serif;
       font-style: italic;
@@ -511,47 +385,26 @@
 
     .page-number-right {
       position: absolute;
-      bottom: 12px;
-      right: 20px;
-      font-size: 0.7rem;
+      bottom: 15px;
+      right: 30px;
+      font-size: 0.8rem;
       color: #8b7750;
       font-family: 'Playfair Display', serif;
       font-style: italic;
       opacity: 0.6;
     }
 
-    @media (min-width: 768px) {
-      .page-number-left {
-        bottom: 15px;
-        left: 50px;
-        font-size: 0.8rem;
-      }
-      
-      .page-number-right {
-        bottom: 15px;
-        right: 30px;
-        font-size: 0.8rem;
-      }
-    }
-
-    /* Progress dots */
+    /* Progress dots on left page */
     .progress-dots {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    @media (min-width: 768px) {
-      .progress-dots {
-        gap: 10px;
-        margin-bottom: 20px;
-      }
+      margin-bottom: 20px;
     }
 
     .dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 20px;
       background: rgba(139, 119, 80, 0.2);
       transition: all 0.4s ease;
@@ -559,155 +412,85 @@
     }
 
     .dot.active {
-      width: 24px;
+      width: 28px;
       background: #c4a87a;
       box-shadow: 0 0 10px rgba(196, 168, 122, 0.5);
       border-color: #a89060;
     }
 
-    @media (min-width: 768px) {
-      .dot {
-        width: 8px;
-        height: 8px;
-      }
-      
-      .dot.active {
-        width: 28px;
-      }
-    }
-
-    /* Story text - Mobile optimized */
+    /* Story text */
     #story-text {
-      font-size: 1.1rem;
-      line-height: 1.7;
+      font-size: 1.3rem;
+      line-height: 1.8;
       text-align: center;
       font-weight: 400;
       color: #3a2a1a;
       letter-spacing: 0.3px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       font-family: 'Playfair Display', 'Quicksand', serif;
-      word-wrap: break-word;
-    }
-
-    @media (min-width: 768px) {
-      #story-text {
-        font-size: 1.3rem;
-        line-height: 1.8;
-        margin-bottom: 20px;
-      }
     }
 
     /* Decorative elements */
     .left-decoration {
       text-align: center;
       opacity: 0.4;
-      margin-top: 15px;
+      margin-top: 20px;
     }
 
     .left-decoration span {
-      font-size: 16px;
-      margin: 0 3px;
+      font-size: 20px;
+      margin: 0 5px;
       color: #8b7750;
-    }
-
-    @media (min-width: 768px) {
-      .left-decoration {
-        margin-top: 20px;
-      }
-      
-      .left-decoration span {
-        font-size: 20px;
-        margin: 0 5px;
-      }
     }
 
     .book-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
+      font-size: 1.8rem;
       color: #5a4a2a;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-style: italic;
     }
 
-    @media (min-width: 768px) {
-      .book-title {
-        font-size: 1.8rem;
-        margin-bottom: 10px;
-      }
-    }
-
     .book-subtitle {
-      font-size: 0.85rem;
+      font-size: 1rem;
       opacity: 0.6;
       color: #6b5a3a;
-      line-height: 1.5;
-    }
-
-    @media (min-width: 768px) {
-      .book-subtitle {
-        font-size: 1rem;
-        line-height: 1.6;
-      }
+      line-height: 1.6;
     }
 
     /* Continue hint */
     .continue-hint {
-      margin-top: 15px;
-      font-size: 0.8rem;
+      margin-top: 20px;
+      font-size: 0.85rem;
       color: #8b7750;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       opacity: 0.7;
-      flex-wrap: wrap;
-      justify-content: center;
     }
 
-    @media (min-width: 768px) {
-      .continue-hint {
-        margin-top: 20px;
-        font-size: 0.85rem;
-        gap: 8px;
-      }
-    }
-
-    /* Next button - Touch friendly */
+    /* Next button */
     .next-btn {
       background: #d4c5a9;
       border: 1px solid #b8a88a;
       color: #3a2a1a;
-      font-size: 0.95rem;
-      padding: 12px 28px;
+      font-size: 1rem;
+      padding: 10px 30px;
       border-radius: 30px;
       cursor: pointer;
       font-weight: 500;
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       letter-spacing: 1px;
-      margin-top: 12px;
+      margin-top: 15px;
       font-family: 'Quicksand', sans-serif;
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
-      min-height: 48px;
     }
 
-    .next-btn:active {
+    .next-btn:hover {
       background: #e0d4bc;
       border-color: #a89878;
-      transform: scale(0.98);
-    }
-
-    @media (min-width: 768px) {
-      .next-btn {
-        font-size: 1rem;
-        padding: 10px 30px;
-        margin-top: 15px;
-      }
-      
-      .next-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-      }
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     }
 
     /* Page curl effect */
@@ -715,24 +498,17 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 25px;
-      height: 25px;
+      width: 30px;
+      height: 30px;
       background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.05) 50%);
       pointer-events: none;
       z-index: 15;
     }
 
-    @media (min-width: 768px) {
-      .page-curl {
-        width: 30px;
-        height: 30px;
-      }
-    }
-
     /* Animations */
     @keyframes floatMoon {
       0%,100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(2deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
     }
 
     @keyframes drift {
@@ -745,9 +521,13 @@
       50% { transform: scale(1.05); }
     }
 
-    /* Prevent pull-to-refresh on mobile */
-    body {
-      overscroll-behavior: none;
+    /* Responsive */
+    @media (max-width: 480px) {
+      .welcome-title { font-size: 2rem; }
+      #story-text { font-size: 1.1rem; }
+      .page-content { padding: 25px 15px 25px 35px; }
+      .moon { width: 70px; height: 70px; }
+      .book-title { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -761,9 +541,10 @@
   <div class="cloud"></div>
   <div class="cloud cloud2"></div>
 
-  <!-- Audio Element -->
-  <audio id="lullabyAudio" loop preload="auto" playsinline>
+  <!-- Audio Element for Lullaby -->
+  <audio id="lullabyAudio" loop preload="auto">
     <source src="lullaby.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
   </audio>
 
   <div class="sound-toggle" id="soundToggle">
@@ -812,7 +593,7 @@
           <div class="page-content">
             <div id="story-text"></div>
             <div class="continue-hint" id="hintMessage">
-              <span>✧</span> tap to continue <span>✧</span>
+              <span>✧</span> tap anywhere to continue <span>✧</span>
             </div>
             <button class="next-btn" id="nextButton">turn the page ↪</button>
           </div>
@@ -832,10 +613,10 @@
         "Your mom once had a pillow she held onto through the years, a quiet comfort through every night.",
         "I hope this pillow becomes the same for you—a place of warmth, safety, and sweet dreams.",
         "Your mom and dad are truly amazing people, and I have no doubt they will be wonderful parents who will fill your life with so much love and care.",
-        "And no matter how far we may be, know that we will always be with you, watching over you and guarding your dreams. 💛"
+        "And no matter how far we may be, know that Tito Bikoy and Tita Michelle are always with you, watching over you and guarding your dreams. 💛"
       ];
 
-      const finalMessage = "With all our love, little one 🌙💛<br><span style='display:block; margin-top:30px; font-size:1.4rem; font-family: \"Caveat\", cursive;'>— Tito Bikoy & Tita Michelle</span>";
+      const finalMessage = "With all our love, little one 🌙💛<br><span style='display:block; margin-top:40px; font-size:1.6rem; font-family: \"Caveat\", cursive;'>— Tito Bikoy & Tita Michelle</span>";
 
       const welcome = document.getElementById('welcomeScreen');
       const bookContainer = document.getElementById('bookContainer');
@@ -854,41 +635,36 @@
       let isFinal = false;
       let isFlipping = false;
       
-      // Audio setup
+      // Audio setup using MP3
       const lullabyAudio = document.getElementById('lullabyAudio');
       let isPlaying = false;
-      let audioInitialized = false;
       
       const soundToggle = document.getElementById('soundToggle');
       const soundIcon = document.getElementById('soundIcon');
       const soundText = document.getElementById('soundText');
 
       // Set up audio
-      lullabyAudio.volume = 0.25; // Gentle volume for mobile
+      lullabyAudio.volume = 0.3; // Gentle volume
       lullabyAudio.loop = true;
-      lullabyAudio.playsInline = true; // Important for iOS
 
-      // Toggle sound with mobile optimization
+      // Toggle sound
       function toggleSound() {
-        if (!audioInitialized) {
-          lullabyAudio.load();
-          audioInitialized = true;
-        }
-        
         if (isPlaying) {
           lullabyAudio.pause();
           soundIcon.textContent = '🔇';
           soundText.textContent = 'play lullaby';
           isPlaying = false;
         } else {
+          // Try to play
           lullabyAudio.play().then(() => {
             soundIcon.textContent = '🎵';
             soundText.textContent = 'lullaby playing';
             isPlaying = true;
           }).catch(error => {
             console.log('Audio play failed:', error);
+            // Show error state
             soundIcon.textContent = '⚠️';
-            soundText.textContent = 'tap to try';
+            soundText.textContent = 'tap to try again';
             isPlaying = false;
           });
         }
@@ -899,11 +675,7 @@
         toggleSound();
       });
 
-      // Touch-friendly event handling
-      soundToggle.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-      }, { passive: false });
-
+      // Handle audio loading errors gracefully
       lullabyAudio.addEventListener('error', (e) => {
         console.log('Audio file error:', e);
         soundIcon.textContent = '📁';
@@ -914,7 +686,7 @@
         soundText.textContent = 'play lullaby';
       });
 
-      // Simple page flip sound
+      // Page flip sound (using Web Audio API for a simple effect)
       function playPageFlipSound() {
         try {
           const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -925,21 +697,22 @@
           
           osc.type = 'sine';
           osc.frequency.value = 440;
-          gain.gain.setValueAtTime(0.04, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
           
           osc.connect(gain);
           gain.connect(audioContext.destination);
           osc.start();
-          osc.stop(now + 0.2);
+          osc.stop(now + 0.25);
           
+          // Close context after sound plays
           setTimeout(() => audioContext.close(), 500);
         } catch(e) {
-          // Silent fail
+          // Silent fail if audio context fails
         }
       }
 
-      // Page flip animation
+      // Slow, precise page flip animation
       function flipPage(callback) {
         if (isFlipping) return;
         isFlipping = true;
@@ -948,6 +721,7 @@
         
         pageRight.classList.add('flip');
         
+        // Wait for the slow animation to complete
         setTimeout(() => {
           if (callback) callback();
           
@@ -971,7 +745,7 @@
       function updateUI() {
         if (isFinal) {
           nextBtn.textContent = 'with love ✨';
-          hintMsg.innerHTML = '<span>💛</span> thank you <span>💛</span>';
+          hintMsg.innerHTML = '<span>💛</span> thank you for reading <span>💛</span>';
           pageNumberLeft.textContent = '— fin —';
           pageNumberRight.textContent = '— fin —';
         } else {
@@ -982,7 +756,7 @@
           if (isTyping) {
             hintMsg.innerHTML = '<span>✧</span> writing ... <span>✧</span>';
           } else {
-            hintMsg.innerHTML = '<span>✧</span> tap to continue <span>✧</span>';
+            hintMsg.innerHTML = '<span>✧</span> tap anywhere to continue <span>✧</span>';
           }
         }
         renderDots();
@@ -1009,7 +783,7 @@
           if (typingIndex < pageText.length) {
             storyText.innerHTML += pageText.charAt(typingIndex);
             typingIndex++;
-            typingTimer = setTimeout(typeNextChar, 40);
+            typingTimer = setTimeout(typeNextChar, 45);
           } else {
             isTyping = false;
             updateUI();
@@ -1081,17 +855,12 @@
         pageNumberRight.textContent = '— 2 —';
       }
 
-      // Event listeners - Mobile optimized
+      // Event listeners
       nextBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         advanceStory();
       });
 
-      nextBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-      }, { passive: false });
-
-      // Keyboard support for desktop
       document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && welcome.classList.contains('hidden')) {
           if (!bookContainer.classList.contains('hidden')) {
@@ -1101,22 +870,14 @@
         }
       });
 
-      // Click/tap anywhere on book to advance
-      const book = document.querySelector('.book');
-      book.addEventListener('click', (e) => {
+      // Click anywhere on book to advance
+      document.querySelector('.book').addEventListener('click', (e) => {
         if (e.target.tagName !== 'BUTTON' && !e.target.closest('.sound-toggle')) {
           advanceStory();
         }
       });
 
-      book.addEventListener('touchstart', (e) => {
-        // Just prevent default to avoid any weird behavior
-      }, { passive: true });
-
       document.getElementById('startBtn').addEventListener('click', startStory);
-      document.getElementById('startBtn').addEventListener('touchstart', (e) => {
-        e.preventDefault();
-      }, { passive: false });
 
       welcome.addEventListener('click', (e) => {
         if (e.target.tagName !== 'BUTTON') {
@@ -1124,8 +885,8 @@
         }
       });
 
-      // Double-tap to restart
-      book.addEventListener('dblclick', () => {
+      // Double-click to restart
+      document.querySelector('.book').addEventListener('dblclick', () => {
         if (isFinal) {
           isFinal = false;
           currentPage = 0;
@@ -1136,21 +897,21 @@
         }
       });
 
-      // Starfield - Optimized for mobile
+      // Starfield
       const canvas = document.getElementById('starfield');
       const ctx = canvas.getContext('2d');
       let width, height;
       let stars = [];
       
-      function initStars(count = 150) {
+      function initStars(count = 200) {
         stars = [];
         for (let i = 0; i < count; i++) {
           stars.push({
             x: Math.random(),
             y: Math.random(),
-            radius: Math.random() * 2 + 0.5,
-            alpha: Math.random() * 0.7 + 0.2,
-            speed: 0.001 + Math.random() * 0.005,
+            radius: Math.random() * 2.5 + 0.8,
+            alpha: Math.random() * 0.8 + 0.2,
+            speed: 0.001 + Math.random() * 0.007,
           });
         }
       }
@@ -1166,7 +927,7 @@
         ctx.clearRect(0, 0, width, height);
         
         stars.forEach(s => {
-          let twinkle = Math.sin(Date.now() * s.speed + s.x * 10) * 0.15 + 0.85;
+          let twinkle = Math.sin(Date.now() * s.speed + s.x * 10) * 0.2 + 0.8;
           let alpha = Math.min(s.alpha * twinkle, 1.0);
           
           ctx.beginPath();
@@ -1174,41 +935,32 @@
           
           const gradient = ctx.createRadialGradient(
             s.x * width, s.y * height, 0,
-            s.x * width, s.y * height, s.radius * 2
+            s.x * width, s.y * height, s.radius * 2.5
           );
           gradient.addColorStop(0, `rgba(255, 248, 220, ${alpha})`);
-          gradient.addColorStop(1, `rgba(210, 225, 255, ${alpha*0.3})`);
+          gradient.addColorStop(1, `rgba(210, 225, 255, ${alpha*0.4})`);
           
           ctx.fillStyle = gradient;
           ctx.fill();
+          
+          if (s.radius > 2) {
+            ctx.shadowColor = '#fff9e6';
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
         });
         
         requestAnimationFrame(drawStars);
       }
 
-      window.addEventListener('resize', () => {
-        resizeCanvas();
-      });
+      window.addEventListener('resize', resizeCanvas);
       
-      // Handle orientation change
-      window.addEventListener('orientationchange', () => {
-        setTimeout(resizeCanvas, 100);
-      });
-      
-      initStars(120); // Fewer stars for better mobile performance
+      initStars(220);
       resizeCanvas();
       requestAnimationFrame(drawStars);
       
       renderDots();
-      
-      // Fix for iOS viewport height
-      function setVH() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-      setVH();
-      window.addEventListener('resize', setVH);
-      window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
     })();
   </script>
 </body>
