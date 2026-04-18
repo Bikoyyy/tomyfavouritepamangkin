@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>for the little one · a message from the heart</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&family=Caveat:wght@400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 20% 30%, #1a3a6d, #0f1a3a, #060a18);
+      color: #3a2a1a;
+      overflow: hidden;
+      position: relative;
+      font-weight: 400;
+    }
+
+    /* Sound Toggle */
+    .sound-toggle {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 100;
+      background: rgba(255, 248, 235, 0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 245, 220, 0.4);
+      border-radius: 50px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      color: #fff8e7;
+    }
+
+    .sound-toggle:hover {
+      background: rgba(255, 248, 235, 0.3);
+      transform: scale(1.05);
+    }
+
+    .sound-icon {
+      font-size: 24px;
+    }
+
+    .sound-text {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    /* Starfield */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Moon */
+    .moon-container {
+      position: fixed;
+      top: 5%;
+      right: 5%;
+      z-index: 2;
+      filter: drop-shadow(0 0 40px rgba(255, 235, 170, 0.5));
+      animation: floatMoon 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .moon {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 30% 30%, #fff8e7, #ffebb5);
+      border-radius: 50%;
+      box-shadow: 0 0 60px #ffe9a7, inset -8px -4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Clouds */
+    .cloud {
+      position: fixed;
+      bottom: 3%;
+      left: 0;
+      width: 200%;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(14px);
+      border-radius: 50%;
+      z-index: 1;
+      animation: drift 35s linear infinite;
+      pointer-events: none;
+    }
+
+    .cloud2 {
+      bottom: 10%;
+      height: 80px;
+      background: rgba(220, 230, 255, 0.02);
+      backdrop-filter: blur(18px);
+      animation: drift 45s linear reverse infinite;
+    }
+
+    /* Main Wrapper */
+    .story-wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* Welcome Screen */
+    .welcome-card {
+      background: rgba(30, 40, 70, 0.35);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 245, 210, 0.2);
+      border-radius: 60px;
+      padding: 48px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 35px 60px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 225, 160, 0.1) inset;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .welcome-card.hidden {
+      opacity: 0;
+      transform: scale(0.94);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .welcome-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 10px 15px #00000030);
+      animation: gentlePulse 3s ease-in-out infinite;
+    }
+
+    .welcome-title {
+      font-size: 2.5rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+      text-shadow: 0 3px 15px #5a7fc9;
+      color: #fff5e0;
+    }
+
+    .welcome-sub {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      margin-bottom: 40px;
+      font-weight: 300;
+      letter-spacing: 1.5px;
+      color: #fff5e0;
+    }
+
+    .start-btn {
+      background: rgba(255, 248, 225, 0.9);
+      border: none;
+      color: #2a3f7e;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 16px 36px;
+      border-radius: 80px;
+      cursor: pointer;
+      box-shadow: 0 15px 30px -8px rgba(0,0,0,0.3), 0 0 0 2px #fff9e0 inset;
+      transition: all 0.25s ease;
+      letter-spacing: 2px;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .start-btn:hover {
+      background: #fffdf5;
+      transform: scale(1.04);
+      box-shadow: 0 20px 35px -6px #00000060, 0 0 0 3px #fff2cc inset;
+    }
+
+    /* Book Container */
+    .book-container {
+      max-width: 750px;
+      width: 100%;
+      perspective: 2500px;
+    }
+
+    .book-container.hidden {
+      display: none;
+    }
+
+    /* The Book */
+    .book {
+      position: relative;
+      width: 100%;
+      min-height: 520px;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    /* Book shadow */
+    .book-shadow {
+      position: absolute;
+      bottom: -15px;
+      left: 5%;
+      width: 90%;
+      height: 30px;
+      background: rgba(0,0,0,0.3);
+      filter: blur(15px);
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    /* Left Page */
+    .page-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, #fdf6e3 0%, #f5ebd2 100%);
+      border-radius: 8px 0 0 8px;
+      box-shadow: 
+        inset -8px 0 20px rgba(0,0,0,0.08),
+        -2px 2px 10px rgba(0,0,0,0.15);
+      border: 1px solid #d4c5a9;
+      border-right: none;
+      overflow: hidden;
+      transform-origin: right center;
+      backface-visibility: hidden;
+    }
+
+    /* Horizontal ruled lines on left page */
+    .page-left .ruled-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        rgba(139, 119, 80, 0.12) 27px,
+        rgba(139, 119, 80, 0.12) 28px
+      );
+      pointer-events: none;
+    }
+
+    /* Red margin line */
+    .page-left .margin-line {
+      position: absolute;
+      top: 0;
+      left: 35px;
+      width: 1px;
+      height: 100%;
+      background: rgba(200, 120, 120, 0.2);
+      pointer-events: none;
+    }
+
+    /* Right Page */
+    .page-right {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, #fef8e8 0%, #f7efdb 100%);
+      border-radius: 0 8px 8px 0;
+      box-shadow: 
+        inset 8px 0 20px rgba(0,0,0,0.08),
+        2px 2px 10px rgba(0,0,0,0.15);
+      border: 1px solid #d4c5a9;
+      border-left: 1px solid #c4b596;
+      overflow: hidden;
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      backface-visibility: hidden;
+      z-index: 10;
+    }
+
+    /* Horizontal ruled lines on right page */
+    .page-right .ruled-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        rgba(139, 119, 80, 0.12) 27px,
+        rgba(139, 119, 80, 0.12) 28px
+      );
+      pointer-events: none;
+    }
+
+    /* Red margin line */
+    .page-right .margin-line {
+      position: absolute;
+      top: 0;
+      left: 35px;
+      width: 1px;
+      height: 100%;
+      background: rgba(200, 120, 120, 0.2);
+      pointer-events: none;
+    }
+
+    /* Flip animation - slow and deliberate */
+    .page-right.flip {
+      transform: rotateY(-170deg);
+    }
+
+    /* Page content */
+    .page-content {
+      padding: 35px 30px 35px 50px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 5;
+    }
+
+    .page-left .page-content {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .page-right .page-content {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+
+    /* Book spine shadow */
+    .book-spine {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 8px;
+      height: 100%;
+      background: linear-gradient(to right, 
+        rgba(0,0,0,0.15) 0%, 
+        rgba(0,0,0,0.05) 50%,
+        transparent 100%);
+      transform: translateX(-50%);
+      z-index: 5;
+      pointer-events: none;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Page number */
+    .page-number-left {
+      position: absolute;
+      bottom: 15px;
+      left: 50px;
+      font-size: 0.8rem;
+      color: #8b7750;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    .page-number-right {
+      position: absolute;
+      bottom: 15px;
+      right: 30px;
+      font-size: 0.8rem;
+      color: #8b7750;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    /* Progress dots on left page */
+    .progress-dots {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 20px;
+      background: rgba(139, 119, 80, 0.2);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(139, 119, 80, 0.3);
+    }
+
+    .dot.active {
+      width: 28px;
+      background: #c4a87a;
+      box-shadow: 0 0 10px rgba(196, 168, 122, 0.5);
+      border-color: #a89060;
+    }
+
+    /* Story text */
+    #story-text {
+      font-size: 1.3rem;
+      line-height: 1.8;
+      text-align: center;
+      font-weight: 400;
+      color: #3a2a1a;
+      letter-spacing: 0.3px;
+      margin-bottom: 20px;
+      font-family: 'Playfair Display', 'Quicksand', serif;
+    }
+
+    /* Decorative elements */
+    .left-decoration {
+      text-align: center;
+      opacity: 0.4;
+      margin-top: 20px;
+    }
+
+    .left-decoration span {
+      font-size: 20px;
+      margin: 0 5px;
+      color: #8b7750;
+    }
+
+    .book-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #5a4a2a;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .book-subtitle {
+      font-size: 1rem;
+      opacity: 0.6;
+      color: #6b5a3a;
+      line-height: 1.6;
+    }
+
+    /* Continue hint */
+    .continue-hint {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #8b7750;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.7;
+    }
+
+    /* Next button */
+    .next-btn {
+      background: #d4c5a9;
+      border: 1px solid #b8a88a;
+      color: #3a2a1a;
+      font-size: 1rem;
+      padding: 10px 30px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      letter-spacing: 1px;
+      margin-top: 15px;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .next-btn:hover {
+      background: #e0d4bc;
+      border-color: #a89878;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    /* Page curl effect */
+    .page-curl {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.05) 50%);
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    /* Animations */
+    @keyframes floatMoon {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
+    }
+
+    @keyframes drift {
+      0% { transform: translateX(-10%); }
+      100% { transform: translateX(-60%); }
+    }
+
+    @keyframes gentlePulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .welcome-title { font-size: 2rem; }
+      #story-text { font-size: 1.1rem; }
+      .page-content { padding: 25px 15px 25px 35px; }
+      .moon { width: 70px; height: 70px; }
+      .book-title { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="starfield"></canvas>
+
+  <div class="moon-container">
+    <div class="moon"></div>
+  </div>
+  <div class="cloud"></div>
+  <div class="cloud cloud2"></div>
+
+  <div class="sound-toggle" id="soundToggle">
+    <span class="sound-icon" id="soundIcon">🎵</span>
+    <span class="sound-text" id="soundText">gentle music on</span>
+  </div>
+
+  <div class="story-wrapper">
+    
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-card">
+      <div class="welcome-icon">🧸✨</div>
+      <div class="welcome-title">for the little one</div>
+      <div class="welcome-sub">a message from the heart</div>
+      <button class="start-btn" id="startBtn">open the book 🌙</button>
+    </div>
+
+    <!-- Book Container -->
+    <div id="bookContainer" class="book-container hidden">
+      <div class="book-shadow"></div>
+      <div class="book" id="book">
+        <!-- Left Page -->
+        <div class="page-left" id="pageLeft">
+          <div class="ruled-lines"></div>
+          <div class="margin-line"></div>
+          <div class="page-content">
+            <div class="progress-dots" id="progressDots"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <div class="book-title">A Little Book</div>
+              <div class="book-subtitle">
+                of love & dreams<br>
+                for the one we can't wait to meet
+              </div>
+              <div class="left-decoration">
+                <span>🌸</span><span>✨</span><span>🌸</span>
+              </div>
+            </div>
+            <div class="page-number-left" id="pageNumberLeft">— 1 —</div>
+          </div>
+        </div>
+        
+        <!-- Right Page -->
+        <div class="page-right" id="pageRight">
+          <div class="ruled-lines"></div>
+          <div class="margin-line"></div>
+          <div class="page-content">
+            <div id="story-text"></div>
+            <div class="continue-hint" id="hintMessage">
+              <span>✧</span> tap anywhere to continue <span>✧</span>
+            </div>
+            <button class="next-btn" id="nextButton">turn the page ↪</button>
+          </div>
+          <div class="page-number-right" id="pageNumberRight">— 2 —</div>
+          <div class="page-curl"></div>
+        </div>
+        
+        <div class="book-spine"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const pages = [
+        "For the little one we can't wait to meet—",
+        "Your mom once had a pillow she held onto through the years, a quiet comfort through every night.",
+        "I hope this pillow becomes the same for you—a place of warmth, safety, and sweet dreams.",
+        "Your mom and dad are truly amazing people, and I have no doubt they will be wonderful parents who will fill your life with so much love and care.",
+        "And no matter how far we may be, know that we will always be with you, watching over you and guarding your dreams. 💛"
+      ];
+
+      const finalMessage = "With all our love, little one 🌙💛<br><span style='display:block; margin-top:40px; font-size:1.6rem; font-family: \"Caveat\", cursive;'>— Tito Bikoy & Tita Michelle</span>";
+
+      const welcome = document.getElementById('welcomeScreen');
+      const bookContainer = document.getElementById('bookContainer');
+      const pageRight = document.getElementById('pageRight');
+      const storyText = document.getElementById('story-text');
+      const nextBtn = document.getElementById('nextButton');
+      const hintMsg = document.getElementById('hintMessage');
+      const progressDots = document.getElementById('progressDots');
+      const pageNumberLeft = document.getElementById('pageNumberLeft');
+      const pageNumberRight = document.getElementById('pageNumberRight');
+
+      let currentPage = 0;
+      let typingIndex = 0;
+      let isTyping = false;
+      let typingTimer = null;
+      let isFinal = false;
+      let isFlipping = false;
+      
+      // Audio setup
+      let audioContext = null;
+      let isPlaying = false;
+      let soundInitialized = false;
+      let musicGain = null;
+      let musicInterval = null;
+      
+      const soundToggle = document.getElementById('soundToggle');
+      const soundIcon = document.getElementById('soundIcon');
+      const soundText = document.getElementById('soundText');
+
+      // Create gentle ambient music
+      function initMusic() {
+        if (soundInitialized) return;
+        
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          
+          musicGain = audioContext.createGain();
+          musicGain.gain.setValueAtTime(0.08, audioContext.currentTime);
+          musicGain.connect(audioContext.destination);
+          
+          function playAmbientChord() {
+            if (!isPlaying) return;
+            
+            const now = audioContext.currentTime;
+            const chords = [
+              [261.63, 329.63, 392.00], // C major
+              [293.66, 369.99, 440.00], // D major
+              [329.63, 415.30, 493.88], // E minor
+              [392.00, 493.88, 587.33]  // G major
+            ];
+            
+            const chord = chords[Math.floor(Math.random() * chords.length)];
+            
+            chord.forEach((freq, i) => {
+              const osc = audioContext.createOscillator();
+              osc.type = i === 0 ? 'sine' : 'triangle';
+              osc.frequency.value = freq;
+              
+              const gain = audioContext.createGain();
+              gain.gain.setValueAtTime(0.02, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 3.5);
+              
+              osc.connect(gain);
+              gain.connect(musicGain);
+              osc.start();
+              osc.stop(now + 3);
+            });
+          }
+          
+          playAmbientChord();
+          musicInterval = setInterval(playAmbientChord, 4500);
+          
+          // Gentle chimes
+          setInterval(() => {
+            if (isPlaying && audioContext.state === 'running') {
+              const chime = audioContext.createOscillator();
+              chime.type = 'sine';
+              chime.frequency.value = 880;
+              
+              const gain = audioContext.createGain();
+              gain.gain.setValueAtTime(0.01, audioContext.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+              
+              chime.connect(gain);
+              gain.connect(musicGain);
+              chime.start();
+              chime.stop(audioContext.currentTime + 0.8);
+            }
+          }, 6000);
+          
+          soundInitialized = true;
+          isPlaying = true;
+          
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          
+        } catch(e) {
+          console.log('Audio init:', e);
+        }
+      }
+
+      // Toggle sound
+      function toggleSound() {
+        if (!soundInitialized) {
+          initMusic();
+          soundIcon.textContent = '🎵';
+          soundText.textContent = 'music on';
+          return;
+        }
+        
+        if (isPlaying) {
+          if (musicGain) {
+            musicGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.5);
+          }
+          soundIcon.textContent = '🔇';
+          soundText.textContent = 'music off';
+          isPlaying = false;
+        } else {
+          if (musicGain) {
+            musicGain.gain.setTargetAtTime(0.08, audioContext.currentTime, 0.5);
+          }
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          soundIcon.textContent = '🎵';
+          soundText.textContent = 'music on';
+          isPlaying = true;
+        }
+      }
+
+      soundToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSound();
+      });
+
+      // Slow, precise page flip animation
+      function flipPage(callback) {
+        if (isFlipping) return;
+        isFlipping = true;
+        
+        // Page flip sound
+        if (audioContext && isPlaying) {
+          try {
+            const now = audioContext.currentTime;
+            const flipSound = audioContext.createOscillator();
+            const flipGain = audioContext.createGain();
+            flipSound.type = 'sine';
+            flipSound.frequency.value = 330;
+            flipGain.gain.setValueAtTime(0.03, now);
+            flipGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            flipSound.connect(flipGain);
+            flipGain.connect(audioContext.destination);
+            flipSound.start();
+            flipSound.stop(now + 0.35);
+          } catch(e) {}
+        }
+        
+        pageRight.classList.add('flip');
+        
+        // Wait for the slow animation to complete
+        setTimeout(() => {
+          if (callback) callback();
+          
+          setTimeout(() => {
+            pageRight.classList.remove('flip');
+            isFlipping = false;
+          }, 100);
+        }, 800); // Match the 1.2s animation, callback at 800ms
+      }
+
+      // Render progress dots
+      function renderDots() {
+        let dotsHtml = '';
+        for (let i = 0; i < pages.length; i++) {
+          dotsHtml += `<span class="dot ${i === currentPage ? 'active' : ''}"></span>`;
+        }
+        progressDots.innerHTML = dotsHtml;
+      }
+
+      // Update UI
+      function updateUI() {
+        if (isFinal) {
+          nextBtn.textContent = 'with love ✨';
+          hintMsg.innerHTML = '<span>💛</span> thank you for reading <span>💛</span>';
+          pageNumberLeft.textContent = '— fin —';
+          pageNumberRight.textContent = '— fin —';
+        } else {
+          nextBtn.textContent = currentPage === pages.length - 1 ? 'finish ✨' : 'turn the page ↪';
+          pageNumberLeft.textContent = `— ${currentPage + 1} —`;
+          pageNumberRight.textContent = `— ${currentPage + 2 > pages.length ? pages.length : currentPage + 2} —`;
+          
+          if (isTyping) {
+            hintMsg.innerHTML = '<span>✧</span> writing ... <span>✧</span>';
+          } else {
+            hintMsg.innerHTML = '<span>✧</span> tap anywhere to continue <span>✧</span>';
+          }
+        }
+        renderDots();
+      }
+
+      // Cancel typing
+      function cancelTyping() {
+        if (typingTimer) {
+          clearTimeout(typingTimer);
+          typingTimer = null;
+        }
+        isTyping = false;
+      }
+
+      // Typewriter effect
+      function typeWriter(pageText) {
+        cancelTyping();
+        isTyping = true;
+        typingIndex = 0;
+        storyText.style.opacity = '0.95';
+        storyText.innerHTML = '';
+        
+        function typeNextChar() {
+          if (typingIndex < pageText.length) {
+            storyText.innerHTML += pageText.charAt(typingIndex);
+            typingIndex++;
+            typingTimer = setTimeout(typeNextChar, 45);
+          } else {
+            isTyping = false;
+            updateUI();
+            storyText.style.opacity = '1';
+            typingTimer = null;
+          }
+        }
+        typeNextChar();
+        updateUI();
+      }
+
+      // Display current page
+      function displayPage() {
+        if (isFinal) {
+          storyText.innerHTML = finalMessage;
+          storyText.style.opacity = '1';
+          cancelTyping();
+          isTyping = false;
+          nextBtn.textContent = 'with love ✨';
+          hintMsg.innerHTML = '<span>💛</span> with all our hearts <span>💛</span>';
+          pageNumberLeft.textContent = '— fin —';
+          pageNumberRight.textContent = '— fin —';
+          document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+          return;
+        }
+        
+        typeWriter(pages[currentPage]);
+      }
+
+      // Advance story
+      function advanceStory() {
+        if (isFlipping) return;
+        
+        if (isTyping) {
+          cancelTyping();
+          if (!isFinal) {
+            storyText.innerHTML = pages[currentPage];
+          }
+          isTyping = false;
+          updateUI();
+          return;
+        }
+
+        if (isFinal) {
+          return;
+        }
+
+        flipPage(() => {
+          if (currentPage < pages.length - 1) {
+            currentPage++;
+            displayPage();
+          } else {
+            isFinal = true;
+            displayPage();
+          }
+        });
+      }
+
+      // Start story
+      function startStory() {
+        welcome.classList.add('hidden');
+        bookContainer.classList.remove('hidden');
+        currentPage = 0;
+        isFinal = false;
+        cancelTyping();
+        displayPage();
+        renderDots();
+        pageNumberLeft.textContent = '— 1 —';
+        pageNumberRight.textContent = '— 2 —';
+        
+        if (!soundInitialized) {
+          initMusic();
+        }
+      }
+
+      // Event listeners
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        advanceStory();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && welcome.classList.contains('hidden')) {
+          if (!bookContainer.classList.contains('hidden')) {
+            e.preventDefault();
+            advanceStory();
+          }
+        }
+      });
+
+      // Click anywhere on book to advance
+      document.querySelector('.book').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && !e.target.closest('.sound-toggle')) {
+          advanceStory();
+        }
+      });
+
+      document.getElementById('startBtn').addEventListener('click', startStory);
+
+      welcome.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') {
+          startStory();
+        }
+      });
+
+      // Double-click to restart
+      document.querySelector('.book').addEventListener('dblclick', () => {
+        if (isFinal) {
+          isFinal = false;
+          currentPage = 0;
+          bookContainer.classList.add('hidden');
+          welcome.classList.remove('hidden');
+          cancelTyping();
+          pageRight.classList.remove('flip');
+        }
+      });
+
+      // Starfield
+      const canvas = document.getElementById('starfield');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let stars = [];
+      
+      function initStars(count = 200) {
+        stars = [];
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random(),
+            y: Math.random(),
+            radius: Math.random() * 2.5 + 0.8,
+            alpha: Math.random() * 0.8 + 0.2,
+            speed: 0.001 + Math.random() * 0.007,
+          });
+        }
+      }
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      function drawStars() {
+        ctx.clearRect(0, 0, width, height);
+        
+        stars.forEach(s => {
+          let twinkle = Math.sin(Date.now() * s.speed + s.x * 10) * 0.2 + 0.8;
+          let alpha = Math.min(s.alpha * twinkle, 1.0);
+          
+          ctx.beginPath();
+          ctx.arc(s.x * width, s.y * height, s.radius, 0, Math.PI * 2);
+          
+          const gradient = ctx.createRadialGradient(
+            s.x * width, s.y * height, 0,
+            s.x * width, s.y * height, s.radius * 2.5
+          );
+          gradient.addColorStop(0, `rgba(255, 248, 220, ${alpha})`);
+          gradient.addColorStop(1, `rgba(210, 225, 255, ${alpha*0.4})`);
+          
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          
+          if (s.radius > 2) {
+            ctx.shadowColor = '#fff9e6';
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        });
+        
+        requestAnimationFrame(drawStars);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      
+      initStars(220);
+      resizeCanvas();
+      requestAnimationFrame(drawStars);
+      
+      renderDots();
+    })();
+  </script>
+</body>
+</html>
