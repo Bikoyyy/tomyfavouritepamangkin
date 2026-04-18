@@ -7,7 +7,7 @@
     "Your mom once had a pillow she held onto through the years, a quiet comfort through every night.",
     "I hope this pillow becomes the same for you—a place of warmth, safety, and sweet dreams.",
     "Your mom and dad are truly amazing people, and I have no doubt they will be wonderful parents who will fill your life with so much love and care.",
-    "And no matter how far we may be, know that Tito Bikoy and Tita Michelle are always with you, watching over you and guarding your dreams. 💛"
+    "And no matter how far we may be, know that we will always be with you, watching over you and guarding your dreams. 💛"
   ];
 
   const finalMessage = `With all our love, little one 🌙💛<span class="signature">— Tito Bikoy & Tita Michelle</span>`;
