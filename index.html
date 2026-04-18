@@ -541,9 +541,15 @@
   <div class="cloud"></div>
   <div class="cloud cloud2"></div>
 
+  <!-- Audio Element for Lullaby -->
+  <audio id="lullabyAudio" loop preload="auto">
+    <source src="lullaby.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <div class="sound-toggle" id="soundToggle">
     <span class="sound-icon" id="soundIcon">🎵</span>
-    <span class="sound-text" id="soundText">gentle music on</span>
+    <span class="sound-text" id="soundText">play lullaby</span>
   </div>
 
   <div class="story-wrapper">
@@ -607,7 +613,7 @@
         "Your mom once had a pillow she held onto through the years, a quiet comfort through every night.",
         "I hope this pillow becomes the same for you—a place of warmth, safety, and sweet dreams.",
         "Your mom and dad are truly amazing people, and I have no doubt they will be wonderful parents who will fill your life with so much love and care.",
-        "And no matter how far we may be, know that we will always be with you, watching over you and guarding your dreams. 💛"
+        "And no matter how far we may be, know that Tito Bikoy and Tita Michelle are always with you, watching over you and guarding your dreams. 💛"
       ];
 
       const finalMessage = "With all our love, little one 🌙💛<br><span style='display:block; margin-top:40px; font-size:1.6rem; font-family: \"Caveat\", cursive;'>— Tito Bikoy & Tita Michelle</span>";
@@ -629,116 +635,38 @@
       let isFinal = false;
       let isFlipping = false;
       
-      // Audio setup
-      let audioContext = null;
+      // Audio setup using MP3
+      const lullabyAudio = document.getElementById('lullabyAudio');
       let isPlaying = false;
-      let soundInitialized = false;
-      let musicGain = null;
-      let musicInterval = null;
       
       const soundToggle = document.getElementById('soundToggle');
       const soundIcon = document.getElementById('soundIcon');
       const soundText = document.getElementById('soundText');
 
-      // Create gentle ambient music
-      function initMusic() {
-        if (soundInitialized) return;
-        
-        try {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
-          
-          musicGain = audioContext.createGain();
-          musicGain.gain.setValueAtTime(0.08, audioContext.currentTime);
-          musicGain.connect(audioContext.destination);
-          
-          function playAmbientChord() {
-            if (!isPlaying) return;
-            
-            const now = audioContext.currentTime;
-            const chords = [
-              [261.63, 329.63, 392.00], // C major
-              [293.66, 369.99, 440.00], // D major
-              [329.63, 415.30, 493.88], // E minor
-              [392.00, 493.88, 587.33]  // G major
-            ];
-            
-            const chord = chords[Math.floor(Math.random() * chords.length)];
-            
-            chord.forEach((freq, i) => {
-              const osc = audioContext.createOscillator();
-              osc.type = i === 0 ? 'sine' : 'triangle';
-              osc.frequency.value = freq;
-              
-              const gain = audioContext.createGain();
-              gain.gain.setValueAtTime(0.02, now);
-              gain.gain.exponentialRampToValueAtTime(0.001, now + 3.5);
-              
-              osc.connect(gain);
-              gain.connect(musicGain);
-              osc.start();
-              osc.stop(now + 3);
-            });
-          }
-          
-          playAmbientChord();
-          musicInterval = setInterval(playAmbientChord, 4500);
-          
-          // Gentle chimes
-          setInterval(() => {
-            if (isPlaying && audioContext.state === 'running') {
-              const chime = audioContext.createOscillator();
-              chime.type = 'sine';
-              chime.frequency.value = 880;
-              
-              const gain = audioContext.createGain();
-              gain.gain.setValueAtTime(0.01, audioContext.currentTime);
-              gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
-              
-              chime.connect(gain);
-              gain.connect(musicGain);
-              chime.start();
-              chime.stop(audioContext.currentTime + 0.8);
-            }
-          }, 6000);
-          
-          soundInitialized = true;
-          isPlaying = true;
-          
-          if (audioContext.state === 'suspended') {
-            audioContext.resume();
-          }
-          
-        } catch(e) {
-          console.log('Audio init:', e);
-        }
-      }
+      // Set up audio
+      lullabyAudio.volume = 0.3; // Gentle volume
+      lullabyAudio.loop = true;
 
       // Toggle sound
       function toggleSound() {
-        if (!soundInitialized) {
-          initMusic();
-          soundIcon.textContent = '🎵';
-          soundText.textContent = 'music on';
-          return;
-        }
-        
         if (isPlaying) {
-          if (musicGain) {
-            musicGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.5);
-          }
+          lullabyAudio.pause();
           soundIcon.textContent = '🔇';
-          soundText.textContent = 'music off';
+          soundText.textContent = 'play lullaby';
           isPlaying = false;
         } else {
-          if (musicGain) {
-            musicGain.gain.setTargetAtTime(0.08, audioContext.currentTime, 0.5);
-          }
-          if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume();
-          }
-          soundIcon.textContent = '🎵';
-          soundText.textContent = 'music on';
-          isPlaying = true;
+          // Try to play
+          lullabyAudio.play().then(() => {
+            soundIcon.textContent = '🎵';
+            soundText.textContent = 'lullaby playing';
+            isPlaying = true;
+          }).catch(error => {
+            console.log('Audio play failed:', error);
+            // Show error state
+            soundIcon.textContent = '⚠️';
+            soundText.textContent = 'tap to try again';
+            isPlaying = false;
+          });
         }
       }
 
@@ -747,27 +675,49 @@
         toggleSound();
       });
 
+      // Handle audio loading errors gracefully
+      lullabyAudio.addEventListener('error', (e) => {
+        console.log('Audio file error:', e);
+        soundIcon.textContent = '📁';
+        soundText.textContent = 'add lullaby.mp3';
+      });
+
+      lullabyAudio.addEventListener('canplaythrough', () => {
+        soundText.textContent = 'play lullaby';
+      });
+
+      // Page flip sound (using Web Audio API for a simple effect)
+      function playPageFlipSound() {
+        try {
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const now = audioContext.currentTime;
+          
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.value = 440;
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+          osc.start();
+          osc.stop(now + 0.25);
+          
+          // Close context after sound plays
+          setTimeout(() => audioContext.close(), 500);
+        } catch(e) {
+          // Silent fail if audio context fails
+        }
+      }
+
       // Slow, precise page flip animation
       function flipPage(callback) {
         if (isFlipping) return;
         isFlipping = true;
         
-        // Page flip sound
-        if (audioContext && isPlaying) {
-          try {
-            const now = audioContext.currentTime;
-            const flipSound = audioContext.createOscillator();
-            const flipGain = audioContext.createGain();
-            flipSound.type = 'sine';
-            flipSound.frequency.value = 330;
-            flipGain.gain.setValueAtTime(0.03, now);
-            flipGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-            flipSound.connect(flipGain);
-            flipGain.connect(audioContext.destination);
-            flipSound.start();
-            flipSound.stop(now + 0.35);
-          } catch(e) {}
-        }
+        playPageFlipSound();
         
         pageRight.classList.add('flip');
         
@@ -779,7 +729,7 @@
             pageRight.classList.remove('flip');
             isFlipping = false;
           }, 100);
-        }, 800); // Match the 1.2s animation, callback at 800ms
+        }, 800);
       }
 
       // Render progress dots
@@ -903,10 +853,6 @@
         renderDots();
         pageNumberLeft.textContent = '— 1 —';
         pageNumberRight.textContent = '— 2 —';
-        
-        if (!soundInitialized) {
-          initMusic();
-        }
       }
 
       // Event listeners
