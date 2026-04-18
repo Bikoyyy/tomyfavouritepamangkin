@@ -25,6 +25,7 @@
   const loadingIndicator = document.getElementById('loadingIndicator');
   const swipeHint = document.getElementById('swipeHint');
   const swipeInstruction = document.getElementById('swipeInstruction');
+  const startBtn = document.getElementById('startBtn');
 
   // State variables
   let currentPage = 0;
@@ -51,37 +52,37 @@
   const soundIcon = document.getElementById('soundIcon');
   const soundText = document.getElementById('soundText');
 
-  // Audio setup
-  lullabyAudio.volume = 0.25;
-  lullabyAudio.loop = true;
-  lullabyAudio.playsInline = true;
-
-  // Loading indicator
-  lullabyAudio.addEventListener('loadstart', () => {
-    loadingIndicator.classList.add('show');
-    loadingIndicator.textContent = 'loading lullaby...';
-  });
-
-  lullabyAudio.addEventListener('canplaythrough', () => {
-    loadingIndicator.classList.remove('show');
-    soundText.textContent = 'play lullaby';
+  // Audio setup - CRITICAL for mobile
+  if (lullabyAudio) {
+    lullabyAudio.volume = 0.25;
+    lullabyAudio.loop = true;
+    lullabyAudio.playsInline = true;
+    lullabyAudio.preload = 'metadata';
+    
+    // Mark as initialized
     audioInitialized = true;
-  });
+    
+    lullabyAudio.addEventListener('canplaythrough', () => {
+      loadingIndicator.classList.remove('show');
+      soundText.textContent = 'play lullaby';
+    });
 
-  lullabyAudio.addEventListener('error', () => {
-    loadingIndicator.classList.remove('show');
-    soundIcon.textContent = '📁';
-    soundText.textContent = 'add lullaby.mp3';
-    audioInitialized = true;
-  });
+    lullabyAudio.addEventListener('error', (e) => {
+      console.log('Audio error:', e);
+      loadingIndicator.classList.remove('show');
+      soundIcon.textContent = '🎵';
+      soundText.textContent = 'tap to play';
+    });
+  }
 
-  // Toggle sound
-  function toggleSound() {
-    if (!audioInitialized) {
-      lullabyAudio.load();
-      soundText.textContent = 'loading...';
-      return;
+  // Toggle sound - Fixed for mobile
+  function toggleSound(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
     }
+    
+    if (!lullabyAudio) return;
     
     if (isPlaying) {
       lullabyAudio.pause();
@@ -89,34 +90,45 @@
       soundText.textContent = 'play lullaby';
       isPlaying = false;
     } else {
-      lullabyAudio.play().then(() => {
-        soundIcon.textContent = '🎵';
-        soundText.textContent = 'lullaby playing';
-        isPlaying = true;
-      }).catch(error => {
-        console.log('Audio play failed:', error);
-        soundIcon.textContent = '⚠️';
-        soundText.textContent = 'tap to retry';
-        isPlaying = false;
-      });
+      // For mobile, we need to load and play
+      lullabyAudio.load();
+      const playPromise = lullabyAudio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          soundIcon.textContent = '🎵';
+          soundText.textContent = 'lullaby playing';
+          isPlaying = true;
+        }).catch(error => {
+          console.log('Play failed:', error);
+          soundIcon.textContent = '🎵';
+          soundText.textContent = 'tap to try again';
+          isPlaying = false;
+        });
+      }
     }
   }
 
-  soundToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleSound();
-  });
-
-  soundToggle.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-  }, { passive: false });
+  // Attach sound toggle with multiple event types for mobile
+  if (soundToggle) {
+    soundToggle.addEventListener('click', toggleSound);
+    soundToggle.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+    }, { passive: true });
+  }
 
   // Page flip sound effect
   function playPageFlipSound() {
     try {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const now = audioContext.currentTime;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const audioContext = new AudioContext();
       
+      // Resume context if suspended (important for mobile)
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      
+      const now = audioContext.currentTime;
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
       
@@ -136,86 +148,13 @@
     }
   }
 
-  // Swipe handling
-  function handleDragStart(e) {
-    if (isFlipping || isTyping || isFinal) return;
-    
-    const touch = e.touches[0];
-    const bookRect = pageRight.getBoundingClientRect();
-    const touchX = touch.clientX;
-    
-    // Only allow swipe from right edge
-    if (touchX < bookRect.right - EDGE_WIDTH) return;
-    
-    isDragging = true;
-    startX = touchX;
-    currentX = touchX;
-    dragProgress = 0;
-    
-    pageRight.classList.add('dragging');
-    pageRight.style.transition = 'none';
-    
-    swipeInstruction.classList.add('show');
-    
-    e.preventDefault();
-  }
-
-  function handleDragMove(e) {
-    if (!isDragging) return;
-    
-    const touch = e.touches[0];
-    currentX = touch.clientX;
-    
-    const deltaX = startX - currentX;
-    dragProgress = Math.max(0, Math.min(1, deltaX / 200));
-    
-    // Apply rotation based on drag (max 172 degrees)
-    const rotation = dragProgress * 172;
-    pageRight.style.transform = `rotateY(-${rotation}deg)`;
-    
-    // Update instruction text
-    if (dragProgress > 0.5) {
-      swipeInstruction.style.opacity = '1';
-      swipeInstruction.innerHTML = '→ release to turn →';
-    } else {
-      swipeInstruction.style.opacity = '0.7';
-      swipeInstruction.innerHTML = '← keep pulling ←';
-    }
-    
-    e.preventDefault();
-  }
-
-  function handleDragEnd(e) {
-    if (!isDragging) return;
-    
-    isDragging = false;
-    pageRight.classList.remove('dragging');
-    pageRight.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-    swipeInstruction.classList.remove('show');
-    
-    const deltaX = startX - currentX;
-    
-    if (Math.abs(deltaX) > SWIPE_THRESHOLD && dragProgress > 0.3) {
-      // Complete the page turn
-      completePageTurn();
-    } else {
-      // Snap back
-      pageRight.style.transform = 'rotateY(0deg)';
-      setTimeout(() => {
-        pageRight.style.transition = '';
-      }, 400);
-    }
-    
-    e.preventDefault();
-  }
-
+  // Complete page turn
   function completePageTurn() {
     if (isFlipping) return;
     isFlipping = true;
     
     playPageFlipSound();
     
-    // Animate to fully flipped
     pageRight.style.transform = 'rotateY(-172deg)';
     
     setTimeout(() => {
@@ -227,7 +166,6 @@
         displayPage();
       }
       
-      // Reset transform after content update
       setTimeout(() => {
         pageRight.style.transition = 'transform 0.3s ease-out';
         pageRight.style.transform = 'rotateY(0deg)';
@@ -241,6 +179,30 @@
     }, 400);
   }
 
+  // Advance story
+  function advanceStory(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    
+    if (isFlipping || isDragging) return;
+    
+    if (isTyping) {
+      cancelTyping();
+      if (!isFinal) {
+        storyText.innerHTML = pages[currentPage];
+      }
+      isTyping = false;
+      updateUI();
+      return;
+    }
+
+    if (isFinal) return;
+    
+    completePageTurn();
+  }
+
   // Render progress dots
   function renderDots() {
     let dotsHtml = '';
@@ -250,7 +212,7 @@
     progressDots.innerHTML = dotsHtml;
   }
 
-  // Update UI elements
+  // Update UI
   function updateUI() {
     if (isFinal) {
       nextBtn.textContent = 'with love ✨';
@@ -266,14 +228,14 @@
       if (isTyping) {
         hintMsg.innerHTML = '<span>✧</span> writing ... <span>✧</span>';
       } else {
-        hintMsg.innerHTML = '<span>✧</span> swipe or tap to continue <span>✧</span>';
+        hintMsg.innerHTML = '<span>✧</span> tap to continue <span>✧</span>';
       }
       if (swipeHint) swipeHint.style.opacity = '1';
     }
     renderDots();
   }
 
-  // Cancel typing animation
+  // Cancel typing
   function cancelTyping() {
     if (typingTimer) {
       clearTimeout(typingTimer);
@@ -306,7 +268,7 @@
     updateUI();
   }
 
-  // Display current page
+  // Display page
   function displayPage() {
     if (isFinal) {
       storyText.innerHTML = finalMessage;
@@ -325,29 +287,13 @@
     typeWriter(pages[currentPage]);
   }
 
-  // Advance story (tap/button)
-  function advanceStory() {
-    if (isFlipping || isDragging) return;
+  // Start story - Fixed for mobile
+  function startStory(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     
-    if (isTyping) {
-      cancelTyping();
-      if (!isFinal) {
-        storyText.innerHTML = pages[currentPage];
-      }
-      isTyping = false;
-      updateUI();
-      return;
-    }
-
-    if (isFinal) {
-      return;
-    }
-
-    completePageTurn();
-  }
-
-  // Start story
-  function startStory() {
     welcome.classList.add('hidden');
     bookContainer.classList.remove('hidden');
     currentPage = 0;
@@ -358,67 +304,167 @@
     pageNumberLeft.textContent = '— 1 —';
     pageNumberRight.textContent = '— 2 —';
     if (swipeHint) swipeHint.style.opacity = '1';
-    
-    // Attach swipe listeners to book element
-    const book = document.querySelector('.book');
-    book.addEventListener('touchstart', handleDragStart, { passive: false });
-    book.addEventListener('touchmove', handleDragMove, { passive: false });
-    book.addEventListener('touchend', handleDragEnd);
-    book.addEventListener('touchcancel', handleDragEnd);
   }
 
-  // Event listeners
-  nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    advanceStory();
-  });
-
-  nextBtn.addEventListener('touchstart', (e) => {
+  // Swipe handlers
+  function handleDragStart(e) {
+    if (isFlipping || isTyping || isFinal) return;
+    
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    const bookRect = pageRight.getBoundingClientRect();
+    const touchX = touch.clientX;
+    
+    if (touchX < bookRect.right - EDGE_WIDTH) return;
+    
+    isDragging = true;
+    startX = touchX;
+    currentX = touchX;
+    dragProgress = 0;
+    
+    pageRight.classList.add('dragging');
+    pageRight.style.transition = 'none';
+    
+    swipeInstruction.classList.add('show');
+    
     e.preventDefault();
-  }, { passive: false });
+  }
 
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if ((e.code === 'Space' || e.code === 'ArrowRight') && welcome.classList.contains('hidden')) {
-      if (!bookContainer.classList.contains('hidden')) {
-        e.preventDefault();
-        advanceStory();
-      }
+  function handleDragMove(e) {
+    if (!isDragging) return;
+    
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    currentX = touch.clientX;
+    
+    const deltaX = startX - currentX;
+    dragProgress = Math.max(0, Math.min(1, deltaX / 200));
+    
+    const rotation = dragProgress * 172;
+    pageRight.style.transform = `rotateY(-${rotation}deg)`;
+    
+    if (dragProgress > 0.5) {
+      swipeInstruction.style.opacity = '1';
+      swipeInstruction.innerHTML = '→ release to turn →';
+    } else {
+      swipeInstruction.style.opacity = '0.7';
+      swipeInstruction.innerHTML = '← keep pulling ←';
     }
-  });
-
-  // Click/tap on book to advance
-  const book = document.querySelector('.book');
-  book.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'BUTTON' && !e.target.closest('.sound-toggle')) {
-      advanceStory();
-    }
-  });
-
-  // Start button
-  document.getElementById('startBtn').addEventListener('click', startStory);
-  document.getElementById('startBtn').addEventListener('touchstart', (e) => {
+    
     e.preventDefault();
-  }, { passive: false });
+  }
 
-  // Click on welcome card to start
-  welcome.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'BUTTON') {
-      startStory();
-    }
-  });
-
-  // Double-tap to restart
-  book.addEventListener('dblclick', () => {
-    if (isFinal) {
-      isFinal = false;
-      currentPage = 0;
-      bookContainer.classList.add('hidden');
-      welcome.classList.remove('hidden');
-      cancelTyping();
+  function handleDragEnd(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    pageRight.classList.remove('dragging');
+    pageRight.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    swipeInstruction.classList.remove('show');
+    
+    const deltaX = startX - currentX;
+    
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD && dragProgress > 0.3) {
+      completePageTurn();
+    } else {
       pageRight.style.transform = 'rotateY(0deg)';
+      setTimeout(() => {
+        pageRight.style.transition = '';
+      }, 400);
     }
-  });
+    
+    e.preventDefault();
+  }
+
+  // Attach event listeners with mobile support
+  function attachEvents() {
+    // Start button
+    if (startBtn) {
+      startBtn.addEventListener('click', startStory);
+      startBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        startStory(e);
+      }, { passive: false });
+    }
+
+    // Welcome card tap
+    if (welcome) {
+      welcome.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'BUTTON') {
+          startStory(e);
+        }
+      });
+      welcome.addEventListener('touchstart', function(e) {
+        if (e.target.tagName !== 'BUTTON') {
+          e.preventDefault();
+          startStory(e);
+        }
+      }, { passive: false });
+    }
+
+    // Next button
+    if (nextBtn) {
+      nextBtn.addEventListener('click', advanceStory);
+      nextBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        advanceStory(e);
+      }, { passive: false });
+    }
+
+    // Book container - main interaction area
+    const book = document.querySelector('.book');
+    if (book) {
+      book.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'BUTTON' && !e.target.closest('.sound-toggle')) {
+          advanceStory(e);
+        }
+      });
+      
+      book.addEventListener('touchstart', function(e) {
+        // Let the swipe handlers manage this
+        const touch = e.touches[0];
+        if (!touch) return;
+        
+        const bookRect = pageRight.getBoundingClientRect();
+        const touchX = touch.clientX;
+        
+        // If touching right edge, let swipe handle it
+        if (touchX >= bookRect.right - EDGE_WIDTH) {
+          handleDragStart(e);
+        }
+      }, { passive: false });
+      
+      book.addEventListener('touchmove', handleDragMove, { passive: false });
+      book.addEventListener('touchend', handleDragEnd);
+      book.addEventListener('touchcancel', handleDragEnd);
+    }
+
+    // Keyboard navigation (desktop)
+    document.addEventListener('keydown', function(e) {
+      if ((e.code === 'Space' || e.code === 'ArrowRight') && welcome.classList.contains('hidden')) {
+        if (!bookContainer.classList.contains('hidden')) {
+          e.preventDefault();
+          advanceStory();
+        }
+      }
+    });
+
+    // Double-tap to restart
+    if (book) {
+      book.addEventListener('dblclick', function() {
+        if (isFinal) {
+          isFinal = false;
+          currentPage = 0;
+          bookContainer.classList.add('hidden');
+          welcome.classList.remove('hidden');
+          cancelTyping();
+          pageRight.style.transform = 'rotateY(0deg)';
+        }
+      });
+    }
+  }
 
   // Starfield animation
   const canvas = document.getElementById('starfield');
@@ -427,7 +473,8 @@
   let stars = [];
   let animationFrame = null;
   
-  function initStars(count = 130) {
+  function initStars(count) {
+    count = count || 110;
     stars = [];
     for (let i = 0; i < count; i++) {
       stars.push({
@@ -455,7 +502,8 @@
     
     const time = Date.now() * 0.001;
     
-    stars.forEach(s => {
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
       const twinkle = Math.sin(time * s.speed * 3 + s.phase) * 0.18 + 0.82;
       let alpha = Math.min(s.alpha * twinkle, 1.0);
       
@@ -471,20 +519,21 @@
       
       ctx.fillStyle = gradient;
       ctx.fill();
-    });
+    }
     
     animationFrame = requestAnimationFrame(drawStars);
   }
 
   window.addEventListener('resize', resizeCanvas);
-  window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
+  window.addEventListener('orientationchange', function() {
+    setTimeout(resizeCanvas, 50);
+  });
   
   initStars(110);
   resizeCanvas();
   animationFrame = requestAnimationFrame(drawStars);
   
-  // Pause animation when page is hidden
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
@@ -497,8 +546,6 @@
     }
   });
   
-  renderDots();
-  
   // iOS viewport height fix
   function setVH() {
     const vh = window.innerHeight * 0.01;
@@ -506,14 +553,19 @@
   }
   setVH();
   window.addEventListener('resize', setVH);
-  window.addEventListener('orientationchange', () => setTimeout(setVH, 50));
+  window.addEventListener('orientationchange', function() {
+    setTimeout(setVH, 50);
+  });
 
-  // Preload audio on first user interaction
-  let audioPreloaded = false;
-  document.body.addEventListener('touchstart', () => {
-    if (!audioPreloaded && lullabyAudio) {
+  // Initialize everything
+  renderDots();
+  attachEvents();
+  
+  // Ensure audio can be played on mobile
+  document.body.addEventListener('touchstart', function() {
+    if (lullabyAudio && lullabyAudio.paused && !isPlaying) {
+      // Just load it, don't autoplay
       lullabyAudio.load();
-      audioPreloaded = true;
     }
   }, { once: true, passive: true });
   
