@@ -391,7 +391,7 @@
       min-height: 500px;
       transform-style: preserve-3d;
       cursor: pointer;
-      touch-action: manipulation;
+      touch-action: pan-y;
     }
 
     @media (min-width: 768px) {
@@ -507,7 +507,7 @@
       border-left: 1px solid #c8b898;
       overflow: hidden;
       transform-origin: left center;
-      transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease-out;
       backface-visibility: hidden;
       z-index: 10;
       will-change: transform;
@@ -557,11 +557,6 @@
       .page-right .margin-line {
         left: 38px;
       }
-    }
-
-    /* Flip animation */
-    .page-right.flip {
-      transform: rotateY(-172deg);
     }
 
     /* Page content */
@@ -840,24 +835,102 @@
       }
     }
 
-    /* Page curl effect */
+    /* Swipe hint - Lifted page corner effect */
+    .swipe-hint {
+      position: absolute;
+      bottom: 30px;
+      right: 20px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      pointer-events: none;
+      animation: pulseHint 2s ease-in-out infinite;
+    }
+
+    .swipe-arrow {
+      font-size: 24px;
+      color: #9a8868;
+      opacity: 0.6;
+      margin-right: 5px;
+    }
+
+    .swipe-text {
+      font-size: 0.7rem;
+      color: #9a8868;
+      opacity: 0.5;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { opacity: 0.4; transform: translateX(0); }
+      50% { opacity: 0.8; transform: translateX(-5px); }
+    }
+
+    /* Lifted page corner (visible when not flipped) */
     .page-curl {
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.05) 50%);
+      width: 50px;
+      height: 50px;
       pointer-events: none;
       z-index: 15;
       border-radius: 0 0 10px 0;
+      transition: opacity 0.3s ease;
     }
 
-    @media (min-width: 768px) {
-      .page-curl {
-        width: 35px;
-        height: 35px;
-      }
+    .page-curl::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 40px 40px;
+      border-color: transparent transparent rgba(0,0,0,0.08) transparent;
+      border-radius: 0 0 8px 0;
+    }
+
+    .page-curl::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 25px;
+      height: 25px;
+      background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.06) 50%);
+      border-radius: 0 0 6px 0;
+    }
+
+    /* Dragging state */
+    .page-right.dragging {
+      transition: none;
+    }
+
+    /* Swipe instruction overlay */
+    .swipe-instruction {
+      position: absolute;
+      bottom: 80px;
+      right: 30px;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 30px;
+      color: #fff8e7;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 25;
+      white-space: nowrap;
+    }
+
+    .swipe-instruction.show {
+      opacity: 1;
     }
 
     /* Animations */
@@ -924,7 +997,7 @@
     <!-- Book Container -->
     <div id="bookContainer" class="book-container hidden">
       <div class="book-shadow"></div>
-      <div class="book" id="book" role="button" aria-label="Story book, tap to turn pages">
+      <div class="book" id="book" role="button" aria-label="Story book, swipe or tap to turn pages">
         <!-- Left Page -->
         <div class="page-left" id="pageLeft">
           <div class="ruled-lines"></div>
@@ -952,7 +1025,7 @@
           <div class="page-content">
             <div id="story-text"></div>
             <div class="continue-hint" id="hintMessage">
-              <span>✧</span> tap to continue <span>✧</span>
+              <span>✧</span> swipe or tap to continue <span>✧</span>
             </div>
             <button class="next-btn" id="nextButton">turn the page ↪</button>
           </div>
@@ -961,6 +1034,15 @@
         </div>
         
         <div class="book-spine"></div>
+        
+        <!-- Swipe hint -->
+        <div class="swipe-hint" id="swipeHint">
+          <span class="swipe-arrow">👆</span>
+          <span class="swipe-text">swipe from edge</span>
+        </div>
+        
+        <!-- Swipe instruction -->
+        <div class="swipe-instruction" id="swipeInstruction">← swipe left to turn page →</div>
       </div>
     </div>
   </div>
@@ -990,6 +1072,8 @@
       const pageNumberLeft = document.getElementById('pageNumberLeft');
       const pageNumberRight = document.getElementById('pageNumberRight');
       const loadingIndicator = document.getElementById('loadingIndicator');
+      const swipeHint = document.getElementById('swipeHint');
+      const swipeInstruction = document.getElementById('swipeInstruction');
 
       // State
       let currentPage = 0;
@@ -998,6 +1082,14 @@
       let typingTimer = null;
       let isFinal = false;
       let isFlipping = false;
+      
+      // Swipe state
+      let isDragging = false;
+      let startX = 0;
+      let currentX = 0;
+      let dragProgress = 0;
+      const SWIPE_THRESHOLD = 80;
+      const EDGE_WIDTH = 60;
       
       // Audio
       const lullabyAudio = document.getElementById('lullabyAudio');
@@ -1093,23 +1185,109 @@
         }
       }
 
-      // Page flip animation
-      function flipPage(callback) {
+      // Swipe handling
+      function handleDragStart(e) {
+        if (isFlipping || isTyping || isFinal) return;
+        
+        const touch = e.touches ? e.touches[0] : e;
+        const bookRect = pageRight.getBoundingClientRect();
+        const touchX = touch.clientX;
+        
+        // Only allow swipe from right edge
+        if (touchX < bookRect.right - EDGE_WIDTH) return;
+        
+        isDragging = true;
+        startX = touchX;
+        currentX = touchX;
+        dragProgress = 0;
+        
+        pageRight.classList.add('dragging');
+        pageRight.style.transition = 'none';
+        
+        swipeInstruction.classList.add('show');
+        
+        e.preventDefault();
+      }
+
+      function handleDragMove(e) {
+        if (!isDragging) return;
+        
+        const touch = e.touches ? e.touches[0] : e;
+        currentX = touch.clientX;
+        
+        const deltaX = startX - currentX;
+        dragProgress = Math.max(0, Math.min(1, deltaX / 200));
+        
+        // Apply rotation based on drag (max 172 degrees)
+        const rotation = dragProgress * 172;
+        pageRight.style.transform = `rotateY(-${rotation}deg)`;
+        
+        // Update instruction opacity
+        if (dragProgress > 0.5) {
+          swipeInstruction.style.opacity = '1';
+          swipeInstruction.innerHTML = '→ release to turn →';
+        } else {
+          swipeInstruction.style.opacity = '0.7';
+          swipeInstruction.innerHTML = '← keep pulling ←';
+        }
+        
+        e.preventDefault();
+      }
+
+      function handleDragEnd(e) {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        pageRight.classList.remove('dragging');
+        pageRight.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        swipeInstruction.classList.remove('show');
+        
+        const deltaX = startX - currentX;
+        
+        if (Math.abs(deltaX) > SWIPE_THRESHOLD && dragProgress > 0.3) {
+          // Complete the page turn
+          completePageTurn();
+        } else {
+          // Snap back
+          pageRight.style.transform = 'rotateY(0deg)';
+          setTimeout(() => {
+            pageRight.style.transition = '';
+          }, 400);
+        }
+        
+        e.preventDefault();
+      }
+
+      function completePageTurn() {
         if (isFlipping) return;
         isFlipping = true;
         
         playPageFlipSound();
         
-        pageRight.classList.add('flip');
+        // Animate to fully flipped
+        pageRight.style.transform = 'rotateY(-172deg)';
         
         setTimeout(() => {
-          if (callback) callback();
+          if (currentPage < pages.length - 1) {
+            currentPage++;
+            displayPage();
+          } else if (!isFinal) {
+            isFinal = true;
+            displayPage();
+          }
           
+          // Reset transform after content update
           setTimeout(() => {
-            pageRight.classList.remove('flip');
-            isFlipping = false;
-          }, 80);
-        }, 750);
+            pageRight.style.transition = 'transform 0.3s ease-out';
+            pageRight.style.transform = 'rotateY(0deg)';
+            
+            setTimeout(() => {
+              pageRight.style.transition = '';
+              isFlipping = false;
+              swipeHint.style.opacity = '1';
+            }, 300);
+          }, 50);
+        }, 400);
       }
 
       // Render progress dots
@@ -1128,6 +1306,7 @@
           hintMsg.innerHTML = '<span>💛</span> thank you <span>💛</span>';
           pageNumberLeft.textContent = '— fin —';
           pageNumberRight.textContent = '— fin —';
+          swipeHint.style.opacity = '0';
         } else {
           nextBtn.textContent = currentPage === pages.length - 1 ? 'finish ✨' : 'turn the page ↪';
           pageNumberLeft.textContent = `— ${currentPage + 1} —`;
@@ -1136,8 +1315,9 @@
           if (isTyping) {
             hintMsg.innerHTML = '<span>✧</span> writing ... <span>✧</span>';
           } else {
-            hintMsg.innerHTML = '<span>✧</span> tap to continue <span>✧</span>';
+            hintMsg.innerHTML = '<span>✧</span> swipe or tap to continue <span>✧</span>';
           }
+          swipeHint.style.opacity = '1';
         }
         renderDots();
       }
@@ -1187,15 +1367,16 @@
           pageNumberLeft.textContent = '— fin —';
           pageNumberRight.textContent = '— fin —';
           document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+          swipeHint.style.opacity = '0';
           return;
         }
         
         typeWriter(pages[currentPage]);
       }
 
-      // Advance story
+      // Advance story (tap/button)
       function advanceStory() {
-        if (isFlipping) return;
+        if (isFlipping || isDragging) return;
         
         if (isTyping) {
           cancelTyping();
@@ -1211,15 +1392,7 @@
           return;
         }
 
-        flipPage(() => {
-          if (currentPage < pages.length - 1) {
-            currentPage++;
-            displayPage();
-          } else {
-            isFinal = true;
-            displayPage();
-          }
-        });
+        completePageTurn();
       }
 
       // Start story
@@ -1233,6 +1406,14 @@
         renderDots();
         pageNumberLeft.textContent = '— 1 —';
         pageNumberRight.textContent = '— 2 —';
+        swipeHint.style.opacity = '1';
+        
+        // Attach swipe listeners
+        const book = document.querySelector('.book');
+        book.addEventListener('touchstart', handleDragStart, { passive: false });
+        book.addEventListener('touchmove', handleDragMove, { passive: false });
+        book.addEventListener('touchend', handleDragEnd);
+        book.addEventListener('touchcancel', handleDragEnd);
       }
 
       // Event listeners
@@ -1280,7 +1461,7 @@
           bookContainer.classList.add('hidden');
           welcome.classList.remove('hidden');
           cancelTyping();
-          pageRight.classList.remove('flip');
+          pageRight.style.transform = 'rotateY(0deg)';
         }
       });
 
